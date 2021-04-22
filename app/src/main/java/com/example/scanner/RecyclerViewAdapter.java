@@ -24,6 +24,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     public void setItemList(List<ScannedItem> itemList){
         this.itemList = itemList;
+        notifyDataSetChanged();
+
 
     }
 
@@ -32,14 +34,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @NonNull
     @Override
     public RecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.item_design,parent,false);
+        View view= LayoutInflater.from(context).inflate(R.layout.item_design,parent,false);
         return new MyViewHolder(view);
 
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.MyViewHolder holder, int position) {
-        holder.serialNoTextView.setText(itemList.get(position).sNo);
+        holder.serialNoTextView.setText(Integer.toString(itemList.get(position).sNo));
         holder.codeTextView.setText(itemList.get(position).barcode);
 
 

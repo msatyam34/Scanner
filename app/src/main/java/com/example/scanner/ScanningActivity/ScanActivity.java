@@ -63,9 +63,7 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReaderFrag
         ScannedItemDatabase db = ScannedItemDatabase.getDbInstance(this.getApplicationContext());
         for(int i=0; i<scannedBarcodeList.size(); i++){
             String data = scannedBarcodeList.get(i);
-            int serialNo = i+1;
             ScannedItem scannedNewItem = new ScannedItem();
-            scannedNewItem.sNo = serialNo;
             scannedNewItem.barcode = data;
             db.scannedItemDao().insertScannedItem(scannedNewItem);
 
