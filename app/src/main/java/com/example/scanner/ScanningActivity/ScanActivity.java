@@ -4,8 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
@@ -13,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.scanner.R;
+import com.example.scanner.db.ScannedItem;
+import com.example.scanner.db.ScannedItemDatabase;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.notbytes.barcode_reader.BarcodeReaderFragment;
 
@@ -25,8 +25,6 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReaderFrag
     private List<String> scannedBarcodeList;
     private TextView lastScannedBarcode;
 
-    SQLiteDatabase myDatabase;
-
     private BarcodeReaderFragment readerFragment;
 
 
@@ -34,7 +32,6 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReaderFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
-        Intent intent = getIntent();
         init();
         addBarcodeReaderFragment();
     }
@@ -63,21 +60,17 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReaderFrag
 
     public void pushToDB(View view) {
         readerFragment.pauseScanning();
+        ScannedItemDatabase db = ScannedItemDatabase.getDbInstance(this.getApplicationContext());
         for(int i=0; i<scannedBarcodeList.size(); i++){
             String data = scannedBarcodeList.get(i);
             int serialNo = i+1;
-            String sqlInsert = "INSERT INTO scannedDatabase (serialNo,code) VALUES ("+ serialNo +",'"+ data +"')";
-            try {
-                myDatabase = this.openOrCreateDatabase("scannedDatabase",MODE_PRIVATE,null);
-                myDatabase.execSQL("CREATE TABLE IF NOT EXISTS scannedDatabase (serialNo INT(3), code STRING(200), UNIQUE(code) ON CONFLICT REPLACE)");
-                myDatabase.execSQL(sqlInsert);
-                Toast.makeText(ScanActivity.this,"Inserted Successfully",Toast.LENGTH_SHORT).show();
+            ScannedItem scannedNewItem = new ScannedItem();
+            scannedNewItem.sNo = serialNo;
+            scannedNewItem.barcode = data;
+            db.scannedItemDao().insertScannedItem(scannedNewItem);
 
-
-            }catch (Exception e){
-                e.printStackTrace();
-                Toast.makeText(ScanActivity.this,"Not inserted properly into DB",Toast.LENGTH_SHORT).show();
-            }
+            finish();
+//
 
 
 
@@ -141,7 +134,5 @@ public class ScanActivity extends AppCompatActivity implements BarcodeReaderFrag
     public void onCameraPermissionDenied() {
 
     }
-
-
 
 }

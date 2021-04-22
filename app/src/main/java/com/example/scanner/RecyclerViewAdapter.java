@@ -1,5 +1,6 @@
 package com.example.scanner;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,15 +9,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.scanner.db.ScannedItem;
+
 import java.util.List;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
 
-    private List<ItemClass> itemList;
+    private List<ScannedItem> itemList;
+    private Context context;
 
-    public RecyclerViewAdapter(List<ItemClass> itemList) {
-        this.itemList = itemList;
+    public RecyclerViewAdapter(Context context) {
+        this.context = context;
     }
+
+    public void setItemList(List<ScannedItem> itemList){
+        this.itemList = itemList;
+
+    }
+
+
 
     @NonNull
     @Override
@@ -28,8 +39,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.MyViewHolder holder, int position) {
-        holder.serialNoTextView.setText(itemList.get(position).getSerialNo());
-        holder.codeTextView.setText(itemList.get(position).getCode());
+        holder.serialNoTextView.setText(itemList.get(position).sNo);
+        holder.codeTextView.setText(itemList.get(position).barcode);
 
 
     }

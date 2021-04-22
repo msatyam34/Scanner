@@ -16,7 +16,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+
         android:layout_width="56dp"
         android:layout_height="56dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -25,5 +27,7 @@
         android:onClick="onScan"
         android:clickable="true"
         android:layout_margin="16dp" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

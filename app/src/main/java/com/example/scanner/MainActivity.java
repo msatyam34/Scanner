@@ -1,5 +1,6 @@
 package com.example.scanner;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -10,8 +11,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import com.example.scanner.ScanningActivity.ScanActivity;
+import com.example.scanner.db.ScannedItem;
+import com.example.scanner.db.ScannedItemDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +25,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerViewAdapter recyclerViewAdapter;
-    private List<ItemClass> itemList;
-    SQLiteDatabase myDatabase;
 
 
     @Override
@@ -30,57 +32,40 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        initItemList();
-
         initRecyclerView();
-    }
-
-    private void initItemList(){
-        itemList = new ArrayList<>();
-        String serialNo = "S.no";
-        String code = "Scanned Code";
-        itemList.add(new ItemClass(serialNo,code));
-//        try {
-//            myDatabase = this.openOrCreateDatabase("scannedDatabase",MODE_PRIVATE,null);
-//            Cursor c = myDatabase.rawQuery("SELECT * FROM scannedDatabase", null);
-//
-//            int serialNoIndex = c.getColumnIndex("serialNo");
-//            int codeIndex = c.getColumnIndex("code");
-//
-//            c.moveToFirst();
-//
-//            while(c!= null){
-//                String sequenceNo = c.getString(serialNoIndex);
-//                String barcode = c.getString(codeIndex);
-//                itemList.add(new ItemClass(sequenceNo,barcode));
-//            }
-//
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-
-
+        loadItemList();
 
     }
+    
 
     private void initRecyclerView(){
         recyclerView = findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerViewAdapter = new RecyclerViewAdapter(itemList);
+        recyclerViewAdapter = new RecyclerViewAdapter(this);
         recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerViewAdapter.notifyDataSetChanged();
 
     }
 
     public void onScan(View view) {
-        Intent intent = new Intent(getApplicationContext(), ScanActivity.class);
-        startActivity(intent);
 
+        startActivityForResult(new Intent(MainActivity.this,ScanActivity.class),100);
+    }
+
+    private void loadItemList(){
+        ScannedItemDatabase db = ScannedItemDatabase.getDbInstance(this.getApplicationContext());
+        List<ScannedItem> itemList = db.scannedItemDao().getAllScannedItem();
+        recyclerViewAdapter.setItemList(itemList);
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(requestCode==100){
+            loadItemList();
+
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
